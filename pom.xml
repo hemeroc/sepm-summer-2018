@@ -111,6 +111,7 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <configuration>
                     <args>
+                        <arg>-Werror</arg>
                         <arg>-Xjsr305=strict</arg>
                     </args>
                     <compilerPlugins>

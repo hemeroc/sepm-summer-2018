@@ -5,17 +5,16 @@ import org.hibernate.annotations.Type
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import org.springframework.validation.annotation.Validated
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 import javax.money.Monetary.getCurrency
 import javax.money.MonetaryAmount
 import javax.persistence.*
 import javax.persistence.FetchType.EAGER
 import javax.persistence.GenerationType.AUTO
 import javax.validation.constraints.Max
-import javax.validation.constraints.Min
 import javax.validation.constraints.Positive
 import javax.validation.constraints.Size
 
@@ -35,6 +34,7 @@ val EUR = getCurrency("EUR")!!
 data class Vehicle(
     @Id @GeneratedValue(strategy = AUTO)
     val id: DatabaseId = 0,
+    val vehicleId: UUID = UUID.randomUUID(),
     @get:Size(min = 3, max = 25)
     var name: String,
     @get:Size(min = 10, max = 2000)

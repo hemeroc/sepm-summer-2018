@@ -20,7 +20,7 @@ class VehicleService(val vehicleRepository: VehicleRepository) {
 
 @Service
 class FileService(
-    @Value("\${fileService.storageLocation}")
+    @Value("\${application.fileService.storageLocation}")
     fileStoreLocation: Path
 ) {
 
@@ -58,10 +58,10 @@ class FileService(
     }
 
     fun retrieveFile(hash: String): File {
-        val hash = hash.toUpperCase()
-        with(fileStoreLocation.resolve(hash).toFile()) {
-            if (!exists()) throw FileNotFoundException("No file with hash '$hash' exists")
-            return this
+        val upperCaseHash = hash.toUpperCase()
+        with(fileStoreLocation.resolve(upperCaseHash).toFile()) {
+            if (!exists()) throw FileNotFoundException("No file with upperCaseHash '$upperCaseHash' exists")
+             return this
         }
     }
 
