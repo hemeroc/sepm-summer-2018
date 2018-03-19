@@ -10,7 +10,13 @@ import java.lang.System.getProperty
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.MessageDigest
+import javax.validation.Valid
 import kotlin.experimental.and
+
+@Service
+class VehicleService(val vehicleRepository: VehicleRepository) {
+    fun save(@Valid vehicle: Vehicle) = vehicleRepository.save(vehicle)
+}
 
 @Service
 class FileService(

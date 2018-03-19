@@ -2,17 +2,21 @@ package at.ac.tuwien.sepm.individual.assignment.vehiclerental
 
 import org.hibernate.annotations.Columns
 import org.hibernate.annotations.Type
-import org.javamoney.moneta.Money
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import org.springframework.validation.annotation.Validated
 import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.money.Monetary.getCurrency
+import javax.money.MonetaryAmount
 import javax.persistence.*
 import javax.persistence.FetchType.EAGER
 import javax.persistence.GenerationType.AUTO
+import javax.validation.constraints.Max
+import javax.validation.constraints.Min
+import javax.validation.constraints.Positive
 import javax.validation.constraints.Size
 
 typealias DatabaseId = Long
@@ -23,22 +27,25 @@ typealias WattHours = Double
 typealias DrivingLicenseTypes = MutableSet<DrivingLicenseType>
 typealias VehicleBookings = List<VehicleBooking>
 
-val EUR = getCurrency("EUR")
+private const val MONEY = "org.jadira.usertype.moneyandcurrency.moneta.PersistentMoneyAmountAndCurrency"
+val EUR = getCurrency("EUR")!!
 
 @Entity
 @EntityListeners(AuditingEntityListener::class)
 data class Vehicle(
     @Id @GeneratedValue(strategy = AUTO)
     val id: DatabaseId = 0,
-    @Size(min = 3, max = 25)
+    @get:Size(min = 3, max = 25)
     var name: String,
-    @Size(min = 10, max = 2000)
+    @get:Size(min = 10, max = 2000)
     var description: String? = null,
-    @Size(min = 1, max = 100)
+    @get:Max(100)
+    @get:Positive
     var numberOfSeats: NumberOfSeats? = null,
-    @Size(min = 3, max = 10)
+    @get:Size(min = 3, max = 10)
     var licensePlateNumber: LicensePlateNumber? = null,
-    @Size(min = 1, max = 1_000_000)
+    @get:Max(1_000_000)
+    @get:Positive
     var power: WattHours? = null,
     @Enumerated(EnumType.STRING)
     var powerSource: PowerSource,
@@ -50,9 +57,13 @@ data class Vehicle(
     @Enumerated(EnumType.STRING)
     @Column(name = "driving_license_type")
     val drivingLicenseTypes: DrivingLicenseTypes = mutableSetOf(),
-    @Columns(columns = [(Column(name = "currency")), (Column(name = "amount"))])
-    @Type(type = "org.jadira.usertype.moneyandcurrency.moneta.PersistentMoneyAmountAndCurrency")
-    var pricePerHour: Money,
+
+    //@get:Max(1_000)
+    //@get:Min(0)
+    @get:Positive
+    @Columns(columns = [(Column(name = "price_per_hour_currency")), (Column(name = "price_per_hour_amount"))])
+    @Type(type = MONEY)
+    var pricePerHour: MonetaryAmount,
     @OneToMany(mappedBy = "vehicleBookingKey.vehicle")
     val vehicleBookings: VehicleBookings = mutableListOf(),
     val deleted: Boolean = false,
