@@ -32,7 +32,6 @@ private const val MONEY = "org.jadira.usertype.moneyandcurrency.moneta.Persisten
 val EUR = getCurrency("EUR")!!
 
 @Entity
-@
 @Where(clause="deleted = FALSE")
 @EntityListeners(AuditingEntityListener::class)
 data class Vehicle(

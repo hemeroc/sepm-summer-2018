@@ -3,6 +3,7 @@ package at.ac.tuwien.sepm.individual.assignment.vehiclerental
 import at.ac.tuwien.sepm.individual.assignment.vehiclerental.DrivingLicenseType.B
 import at.ac.tuwien.sepm.individual.assignment.vehiclerental.PowerSource.HUMAN
 import at.ac.tuwien.sepm.individual.assignment.vehiclerental.PowerSource.MOTORIZED
+import mu.KLogger
 import org.javamoney.moneta.Money
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -18,7 +19,7 @@ class DemoApplication
 
 @Component
 @Transactional
-class Runner(val vehicleService: VehicleService, val vehicleRepository: VehicleRepository) : CommandLineRunner {
+class Runner(val logger:KLogger, val vehicleService: VehicleService, val vehicleRepository: VehicleRepository) : CommandLineRunner {
     override fun run(vararg args: String?) {
         logger.debug { "Application started" }
         vehicleRepository.deleteAll()

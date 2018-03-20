@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepm.individual.assignment.vehiclerental
 
+import mu.KLogger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.File
@@ -11,24 +12,22 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.MessageDigest
 import javax.validation.Valid
-import kotlin.experimental.and
 
 @Service
 class VehicleService(val vehicleRepository: VehicleRepository) {
     fun save(@Valid vehicle: Vehicle) = vehicleRepository.save(vehicle)
 }
 
+private const val SHA1 = "SHA-1"
+private const val USER_HOME_SHORTCUT = "~/"
+private val USER_HOME_PATH = Paths.get(getProperty("user.home"))!!
+
 @Service
 class FileService(
+    val logger: KLogger,
     @Value("\${application.fileService.storageLocation}")
     fileStoreLocation: Path
 ) {
-
-    companion object {
-        const val SHA1 = "SHA-1"
-        const val USER_HOME_SHORTCUT = "~/"
-        val USER_HOME_PATH = Paths.get(getProperty("user.home"))!!
-    }
 
     private val fileStoreLocation: Path
 
@@ -61,7 +60,7 @@ class FileService(
         val upperCaseHash = hash.toUpperCase()
         with(fileStoreLocation.resolve(upperCaseHash).toFile()) {
             if (!exists()) throw FileNotFoundException("No file with upperCaseHash '$upperCaseHash' exists")
-             return this
+            return this
         }
     }
 

@@ -6,8 +6,13 @@ import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InjectionPoint
+import org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Scope
 import java.lang.System.currentTimeMillis
+
 
 @Configuration
 @Aspect
@@ -25,7 +30,12 @@ class LoggingAspect {
 
 }
 
-private val loggerMap: MutableMap<Class<Any>, KLogger> = HashMap()
+@Configuration
+class LoggerConfig {
 
-val Any.logger: KLogger
-    get() = loggerMap.getOrPut(this.javaClass, { KotlinLogging.logger(this.javaClass.canonicalName) })
+    @Bean
+    @Scope(SCOPE_PROTOTYPE)
+    fun logger(injectionPoint: InjectionPoint): KLogger =
+        KotlinLogging.logger(injectionPoint.methodParameter!!.containingClass.canonicalName)
+
+}
