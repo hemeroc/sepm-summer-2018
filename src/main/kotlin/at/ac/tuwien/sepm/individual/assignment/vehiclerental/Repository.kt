@@ -8,9 +8,7 @@ import javax.validation.Valid
 interface BookingRepository : PagingAndSortingRepository<Booking, Long>
 
 @Repository
-interface VehicleRepository : PagingAndSortingRepository<Vehicle, Long> {
-    override fun <S : @Valid Vehicle?> save(@Valid p0: @Valid S): @Valid S
-}
+interface VehicleRepository : PagingAndSortingRepository<Vehicle, Long>
 
 @Repository
 interface VehicleBookingRepository : PagingAndSortingRepository<VehicleBooking, Long>

@@ -1,7 +1,9 @@
 package at.ac.tuwien.sepm.individual.assignment.vehiclerental
 
 import org.hibernate.annotations.Columns
+import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.Type
+import org.hibernate.annotations.Where
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
@@ -30,6 +32,8 @@ private const val MONEY = "org.jadira.usertype.moneyandcurrency.moneta.Persisten
 val EUR = getCurrency("EUR")!!
 
 @Entity
+@
+@Where(clause="deleted = FALSE")
 @EntityListeners(AuditingEntityListener::class)
 data class Vehicle(
     @Id @GeneratedValue(strategy = AUTO)
