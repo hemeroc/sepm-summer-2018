@@ -7,13 +7,15 @@ import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext
 import javax.validation.Payload
 import kotlin.annotation.AnnotationRetention.RUNTIME
-import kotlin.annotation.AnnotationTarget.FIELD
+import kotlin.annotation.AnnotationTarget.*
 import kotlin.reflect.KClass
 
-@Constraint(validatedBy = [CreditCardNumberValidator::class])
-@Target(FIELD)
+
+@Target(FUNCTION, PROPERTY_SETTER, PROPERTY_GETTER, FIELD, VALUE_PARAMETER)
 @Retention(RUNTIME)
+@Constraint(validatedBy = [CreditCardNumberValidator::class])
 annotation class ValidCreditCardNumber(
+    val issuer: Array<CreditCardNumberValidator.CreditCardIssuer> = [],
     val message: String = "Invalid credit card number",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
@@ -21,20 +23,32 @@ annotation class ValidCreditCardNumber(
 
 class CreditCardNumberValidator : ConstraintValidator<ValidCreditCardNumber, String> {
 
-    lateinit var constraint: ValidCreditCardNumber
+    lateinit var issuer: Array<CreditCardNumberValidator.CreditCardIssuer>
 
     override fun initialize(constraint: ValidCreditCardNumber) {
-        this.constraint = constraint
+        this.issuer = constraint.issuer
     }
 
     override fun isValid(creditCardNumber: CreditCardNumber?, cxt: ConstraintValidatorContext): Boolean =
-        creditCardNumber?.let { CreditCardValidator().isValid(creditCardNumber) } ?: true
+        creditCardNumber?.let {
+            CreditCardValidator(issuer.map { it.issuer }.sum()).isValid(creditCardNumber)
+        } ?: true
+
+    enum class CreditCardIssuer(val issuer: Long) {
+        NONE(CreditCardValidator.NONE),
+        AMEX(CreditCardValidator.AMEX),
+        VISA(CreditCardValidator.VISA),
+        MASTERCARD(CreditCardValidator.MASTERCARD),
+        DISCOVER(CreditCardValidator.DISCOVER),
+        DINERS(CreditCardValidator.DINERS),
+        VPAY(CreditCardValidator.VPAY),
+    }
 
 }
 
-@Constraint(validatedBy = [IbanValidator::class])
-@Target(FIELD)
+@Target(FUNCTION, PROPERTY_SETTER, PROPERTY_GETTER, FIELD, VALUE_PARAMETER)
 @Retention(RUNTIME)
+@Constraint(validatedBy = [IbanValidator::class])
 annotation class ValidIban(
     val message: String = "Invalid IBAN",
     val groups: Array<KClass<*>> = [],
@@ -43,11 +57,7 @@ annotation class ValidIban(
 
 class IbanValidator : ConstraintValidator<ValidIban, String> {
 
-    lateinit var constraint: ValidIban
-
-    override fun initialize(constraint: ValidIban) {
-        this.constraint = constraint
-    }
+    override fun initialize(constraint: ValidIban) { }
 
     override fun isValid(iban: Iban?, cxt: ConstraintValidatorContext): Boolean =
         iban?.let { IBANValidator().isValid(iban) } ?: true
