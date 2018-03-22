@@ -1,30 +1,55 @@
 package at.ac.tuwien.sepm.individual.assignment.vehiclerental
 
-import org.hibernate.validator.internal.util.logging.LoggerFactory
-import org.javamoney.moneta.Money
-import java.lang.invoke.MethodHandles
+import org.apache.commons.validator.routines.CreditCardValidator
+import org.apache.commons.validator.routines.IBANValidator
+import javax.validation.Constraint
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext
-import javax.validation.constraints.Size
+import javax.validation.Payload
+import kotlin.annotation.AnnotationRetention.RUNTIME
+import kotlin.annotation.AnnotationTarget.FIELD
+import kotlin.reflect.KClass
 
-class SizeValidatorForMoney : ConstraintValidator<Size, Money> {
+@Constraint(validatedBy = [CreditCardNumberValidator::class])
+@Target(FIELD)
+@Retention(RUNTIME)
+annotation class ValidCreditCardNumber(
+    val message: String = "Invalid credit card number",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
+)
 
-    companion object {
-        private val LOG = LoggerFactory.make(MethodHandles.lookup())!!
+class CreditCardNumberValidator : ConstraintValidator<ValidCreditCardNumber, String> {
+
+    lateinit var constraint: ValidCreditCardNumber
+
+    override fun initialize(constraint: ValidCreditCardNumber) {
+        this.constraint = constraint
     }
 
-    private var max: Int = 0
-    private var min: Int = 0
+    override fun isValid(creditCardNumber: CreditCardNumber?, cxt: ConstraintValidatorContext): Boolean =
+        creditCardNumber?.let { CreditCardValidator().isValid(creditCardNumber) } ?: true
 
-    override fun isValid(value: Money?, context: ConstraintValidatorContext?): Boolean {
-        return value?.number?.intValueExact()?:min >= min && value?.number?.intValueExact()?:max <= max
+}
+
+@Constraint(validatedBy = [IbanValidator::class])
+@Target(FIELD)
+@Retention(RUNTIME)
+annotation class ValidIban(
+    val message: String = "Invalid IBAN",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
+)
+
+class IbanValidator : ConstraintValidator<ValidIban, String> {
+
+    lateinit var constraint: ValidIban
+
+    override fun initialize(constraint: ValidIban) {
+        this.constraint = constraint
     }
 
-    override fun initialize(parameters: Size?) {
-        min = parameters!!.min
-        max = parameters.max
-        if (max < min)
-            throw LOG.lengthCannotBeNegativeException
-    }
+    override fun isValid(iban: Iban?, cxt: ConstraintValidatorContext): Boolean =
+        iban?.let { IBANValidator().isValid(iban) } ?: true
 
 }

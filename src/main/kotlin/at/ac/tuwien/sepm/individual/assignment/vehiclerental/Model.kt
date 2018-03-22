@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepm.individual.assignment.vehiclerental
 
 import org.hibernate.annotations.Columns
-import org.hibernate.annotations.OnDelete
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.Where
 import org.springframework.data.annotation.CreatedDate
@@ -27,12 +26,15 @@ typealias DrivingLicenseNumber = String
 typealias WattHours = Double
 typealias DrivingLicenseTypes = MutableSet<DrivingLicenseType>
 typealias VehicleBookings = List<VehicleBooking>
+typealias CreditCardNumber = String
+typealias Iban = String
+
 
 private const val MONEY = "org.jadira.usertype.moneyandcurrency.moneta.PersistentMoneyAmountAndCurrency"
 val EUR = getCurrency("EUR")!!
 
 @Entity
-@Where(clause="deleted = FALSE")
+@Where(clause="deleted = 'FALSE'")
 @EntityListeners(AuditingEntityListener::class)
 data class Vehicle(
     @Id @GeneratedValue(strategy = AUTO)
@@ -60,9 +62,6 @@ data class Vehicle(
     @Enumerated(EnumType.STRING)
     @Column(name = "driving_license_type")
     val drivingLicenseTypes: DrivingLicenseTypes = mutableSetOf(),
-
-    //@get:Max(1_000)
-    //@get:Min(0)
     @get:Positive
     @Columns(columns = [(Column(name = "price_per_hour_currency")), (Column(name = "price_per_hour_amount"))])
     @Type(type = MONEY)
@@ -105,10 +104,19 @@ data class Booking(
     val id: DatabaseId = 0,
     var startTime: LocalDateTime,
     var endTime: LocalDateTime,
+    var payment : Payment,
     @OneToMany(mappedBy = "vehicleBookingKey.booking")
     val vehicleBookings: VehicleBookings = mutableListOf()
 )
 
+
+@Embeddable
+data class Payment(
+    @ValidIban
+    val iban: Iban?,
+    @ValidCreditCardNumber
+    val creditCardNumber: CreditCardNumber?
+)
 
 enum class PowerSource {
     MOTORIZED,
