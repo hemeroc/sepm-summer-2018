@@ -1,5 +1,8 @@
-package at.ac.tuwien.sepm.individual.assignment.vehiclerental
+package at.ac.tuwien.sepm.individual.assignment.vehiclerental.service
 
+import at.ac.tuwien.sepm.individual.assignment.vehiclerental.model.Vehicle
+import at.ac.tuwien.sepm.individual.assignment.vehiclerental.repository.VehicleRepository
+import at.ac.tuwien.sepm.individual.assignment.vehiclerental.util.toHexString
 import mu.KLogger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service

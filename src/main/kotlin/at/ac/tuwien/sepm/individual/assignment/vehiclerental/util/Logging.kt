@@ -1,4 +1,4 @@
-package at.ac.tuwien.sepm.individual.assignment.vehiclerental
+package at.ac.tuwien.sepm.individual.assignment.vehiclerental.util
 
 import mu.KLogger
 import mu.KotlinLogging

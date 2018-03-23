@@ -1,5 +1,7 @@
-package at.ac.tuwien.sepm.individual.assignment.vehiclerental
+package at.ac.tuwien.sepm.individual.assignment.vehiclerental.util
 
+import at.ac.tuwien.sepm.individual.assignment.vehiclerental.model.CreditCardNumber
+import at.ac.tuwien.sepm.individual.assignment.vehiclerental.model.Iban
 import org.apache.commons.validator.routines.CreditCardValidator
 import org.apache.commons.validator.routines.IBANValidator
 import javax.validation.Constraint
@@ -23,7 +25,7 @@ annotation class ValidCreditCardNumber(
 
 class CreditCardNumberValidator : ConstraintValidator<ValidCreditCardNumber, String> {
 
-    lateinit var issuer: Array<CreditCardNumberValidator.CreditCardIssuer>
+    lateinit var issuer: Array<CreditCardIssuer>
 
     override fun initialize(constraint: ValidCreditCardNumber) {
         this.issuer = constraint.issuer
