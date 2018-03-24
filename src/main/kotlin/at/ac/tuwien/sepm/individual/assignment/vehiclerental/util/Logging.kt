@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
 import java.lang.System.currentTimeMillis
 
-
 @Configuration
 @Aspect
 class LoggingAspect {
@@ -31,7 +30,7 @@ class LoggingAspect {
 }
 
 @Configuration
-class LoggerConfig {
+class LoggingConfig {
 
     @Bean
     @Scope(SCOPE_PROTOTYPE)
